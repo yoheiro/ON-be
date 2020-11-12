@@ -1,176 +1,93 @@
 <template>
-  <v-row justify="center" align="center">
-    <v-col cols="12">
-      <div v-for="(stream, index) in remoteStreams" :key="index">
-        <video autoplay playsinline :srcObject.prop="stream"></video>
-      </div>
-      <video
-        id="my-video"
-        muted="true"
-        width="500"
-        autoplay
-        playsinline
-      ></video>
-      <input v-model="roomId" type="text" placeholder="Room Name" />
-      <p>
-        ROOM ID: <span id="room-id">{{ roomId }}</span>
-      </p>
-      <button
-        v-if="roomOpened === true"
-        class="button--green"
-        @click="leaveRoom"
-      >
-        Leave
-      </button>
-      <button v-else class="button--green" @click="joinRoom">Join</button>
-      <br />
-      <div>
-        マイク:
-        <select v-model="selectedAudio" @change="onChange">
-          <option disabled value="">Please select one</option>
-          <option
-            v-for="(audio, key, index) in audios"
-            :key="index"
-            :value="audio.value"
-          >
-            {{ audio.text }}
-          </option>
-        </select>
-
-        カメラ:
-        <select v-model="selectedVideo" @change="onChange">
-          <option disabled value="">Please select one</option>
-          <option
-            v-for="(video, key, index) in videos"
-            :key="index"
-            :value="video.value"
-          >
-            {{ video.text }}
-          </option>
-        </select>
-      </div>
-    </v-col>
-  </v-row>
+  <div>
+    <h1 class="title">On be</h1>
+  </div>
 </template>
 
 <script>
-import Peer from 'skyway-js';
+import firebase from '~/plugins/firebase';
 
 export default {
   data() {
     return {
-      APIKey: 'f0380daa-b6a9-43c6-b015-249eb77f026f',
-      selectedAudio: '',
-      selectedVideo: '',
-      audios: [],
-      videos: [],
-      localStream: null,
-      peerId: '',
-      roomId: '',
-      remoteStreams: [],
-      roomOpened: false,
+      userPassword: '',
+      userEmail: '',
     };
   },
-  async created() {
-    // ここでpeerのリスナーを設置
-    this.peer = new Peer({ key: this.APIKey, debug: 3 }); // 新規にPeerオブジェクトの作成
-
-    // デバイスへのアクセス
-    const deviceInfos = await navigator.mediaDevices.enumerateDevices();
-    console.log(deviceInfos);
-
-    // オーディオデバイスの情報を取得
-    deviceInfos
-      .filter((deviceInfo) => deviceInfo.kind === 'audioinput')
-      .map((audio) =>
-        this.audios.push({
-          text: audio.label || `Microphone ${this.audios.length + 1}`,
-          value: audio.deviceId,
-        })
-      );
-
-    // カメラの情報を取得
-    deviceInfos
-      .filter((deviceInfo) => deviceInfo.kind === 'videoinput')
-      .map((video) =>
-        this.videos.push({
-          text: video.label || `Camera  ${this.videos.length - 1}`,
-          value: video.deviceId,
-        })
-      );
+  created() {
+    this.compFunc();
   },
   methods: {
-    // 端末のカメラ音声設定
-    onChange() {
-      if (this.selectedAudio !== '' && this.selectedVideo !== '') {
-        this.connectLocalCamera();
-        console.log('onchange');
+    setUserEmail(val) {
+      return new Promise((resolve) => {
+        this.$store.commit('getUid', val);
+        resolve();
+      });
+    },
+    getPushPermission() {
+      try {
+        window.FirebasePlugin.hasPermission(function (hasPermission) {
+          if (hasPermission) {
+            alert('OK');
+          } else {
+            window.FirebasePlugin.grantPermission(
+              function () {},
+              function (error) {
+                alert(error);
+              }
+            );
+          }
+        });
+      } catch (error) {
+        alert(error);
       }
     },
-
-    async connectLocalCamera() {
-      const constraints = {
-        audio: this.selectedAudio
-          ? { deviceId: { exact: this.selectedAudio } }
-          : false,
-        video: this.selectedVideo
-          ? { deviceId: { exact: this.selectedVideo } }
-          : false,
-      };
-
-      const stream = await navigator.mediaDevices.getUserMedia(constraints);
-      document.getElementById('my-video').srcObject = stream;
-      this.localStream = stream;
-    },
-
-    leaveRoom() {
-      if (!this.peer.open) {
-        return;
+    login() {
+      const that = this;
+      this.userPassword = localStorage.getItem('userPassword');
+      this.userEmail = localStorage.getItem('userEmail');
+      // ログアウトしてuserEmailとuserPasswordがundefinedのときはlogin.vueに遷移
+      if (this.userEmail === null || this.userPassword === null) {
+        that.$router.push({ name: 'login' });
+      } else {
+        firebase
+          .auth()
+          .signInWithEmailAndPassword(this.userEmail, this.userPassword)
+          .then(() => {
+            firebase.auth().onAuthStateChanged(async (user) => {
+              // 認証メールを認証していない時login.vueに遷移
+              if (!user.emailVerified) {
+                await (() => {
+                  this.modalVisible = false;
+                  this.dialog = !this.dialog;
+                  this.dialogTitle = '認証エラー';
+                  this.dialogText = '認証メールを確認してください';
+                  this.buttonText = 'Ok';
+                });
+                this.$router.push({ name: 'login' });
+              } else {
+                await this.setUserEmail(user);
+                this.$router.push({ name: 'video' });
+              }
+            });
+          })
+          .catch(function () {
+            setTimeout(function () {
+              that.$router.push({ name: 'login' });
+            }, 1000);
+          });
       }
-      this.roomOpened = false;
-      this.remoteStreams = [];
-      this.room.close();
     },
-
-    // 「div(joinTrigger)が押される＆既に接続が始まっていなかったら接続」するリスナーを設置
-    joinRoom() {
-      if (!this.peer.open) {
-        return;
-      }
-      this.roomOpened = true; // 部屋に接続するメソッド（joinRoom）
-      this.room = this.peer.joinRoom(this.roomId, {
-        mode: 'sfu',
-        stream: this.localStream,
-      }); // 部屋に接続できた時（open）に一度だけdiv(messages)に=== You joined ===を表示
-      this.room.once('open', () => {
-        this.messages.push('=== You joined ===');
-      }); // 部屋に誰かが接続してきた時（peerJoin）、いつでもdiv(messages)に下記のテキストを表示
-      this.room.on('peerJoin', (peerId) => {
-        this.messages.push(`=== ${peerId} joined ===`);
-      });
-      // 重要：streamの内容に変更があった時（stream）videoタグを作って流す
-      this.room.on('stream', async (stream) => {
-        await this.remoteStreams.push(stream);
-      });
-
-      // 重要：誰かがテキストメッセージを送った時、messagesを更新
-      this.room.on('data', ({ data, src }) => {
-        this.messages.push(`${src}: ${data}`);
-      });
-
-      // 誰かが退出した場合、div（remoteVideos）内にある、任意のdata-peer-idがついたvideoタグの内容を空にして削除する
-      this.room.on('peerLeave', (peerId) => {
-        // const index = this.remoteStreams.findIndex((v) => v.peerId === peerId);
-        // const removedStream = this.remoteStreams.splice(index, 1);
-        this.messages.push(`=== ${peerId} left ===`);
-      });
-
-      // 自分が退出した場合の処理
-      this.room.once('close', () => {
-        // メッセージ送信ボタンを押せなくする
-        this.messages.length = 0;
-      });
+    compFunc() {
+      // this.getPushPermission();
+      this.login();
     },
   },
 };
 </script>
+<style scoped>
+.title {
+  text-align: center;
+  color: #ffab91;
+}
+</style>
