@@ -174,3 +174,10 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+#my-video {
+  transform: rotateY(180deg);
+  max-width: 40vw;
+}
+</style>
