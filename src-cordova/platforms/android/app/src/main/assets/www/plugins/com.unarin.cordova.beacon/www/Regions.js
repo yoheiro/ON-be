@@ -1,5 +1,9 @@
-cordova.define("com.unarin.cordova.beacon.Regions", function(require, exports, module) {
-/*
+cordova.define('com.unarin.cordova.beacon.Regions', function (
+  require,
+  exports,
+  module
+) {
+  /*
  Licensed to the Apache Software Foundation (ASF) under one
  or more contributor license agreements.  See the NOTICE file
  distributed with this work for additional information
@@ -18,98 +22,91 @@ cordova.define("com.unarin.cordova.beacon.Regions", function(require, exports, m
  under the License.
  */
 
-var _ = require('com.unarin.cordova.beacon.underscorejs');
-var CircularRegion = require('com.unarin.cordova.beacon.CircularRegion');
-var BeaconRegion = require('com.unarin.cordova.beacon.BeaconRegion');
-var Region = require('com.unarin.cordova.beacon.Region');
+  const _ = require('com.unarin.cordova.beacon.underscorejs');
+  const CircularRegion = require('com.unarin.cordova.beacon.CircularRegion');
+  const BeaconRegion = require('com.unarin.cordova.beacon.BeaconRegion');
+  const Region = require('com.unarin.cordova.beacon.Region');
 
+  /**
+   * Utility class for un-marshalling {Region} instances from JSON objects,
+   * checking their types.
+   *
+   * @type {Regions}
+   */
+  function Regions() {}
 
-/**
- * Utility class for un-marshalling {Region} instances from JSON objects,
- * checking their types.
- * 
- * @type {Regions}
- */
-function Regions (){};
+  /**
+   * Creates an instance of {@link Region} from the provided map of parameters.
+   *
+   * @param jsonMap The JSON object which is used to construct the return value.
+   *
+   * @returns {Region} Returns a subclass of {@link Region}.
+   */
+  Regions.fromJson = function (jsonMap) {
+    const typeName = jsonMap.typeName;
+    if (!_.isString(typeName) || _.isEmpty(typeName)) {
+      throw new TypeError('jsonMap need to have a key "typeName"');
+    }
 
+    const identifier = jsonMap.identifier;
 
-/**
- * Creates an instance of {@link Region} from the provided map of parameters.
- *
- * @param jsonMap The JSON object which is used to construct the return value.
- * 
- * @returns {Region} Returns a subclass of {@link Region}.
- */
-Regions.fromJson = function(jsonMap) {
+    let region = null;
+    if (typeName === 'CircularRegion') {
+      const latitude = jsonMap.latitude;
+      const longitude = jsonMap.longitude;
+      const radius = jsonMap.radius;
+      region = new CircularRegion(identifier, latitude, longitude, radius);
+    } else if (typeName === 'BeaconRegion') {
+      const uuid = jsonMap.uuid;
+      const major = jsonMap.major;
+      const minor = jsonMap.minor;
+      region = new BeaconRegion(identifier, uuid, major, minor);
+    } else {
+      console.error('Unrecognized Region typeName: ' + typeName);
+    }
 
-	var typeName = jsonMap.typeName;
-	if (!_.isString(typeName) || _.isEmpty(typeName)) {
-		throw new TypeError('jsonMap need to have a key "typeName"');
-	}
+    return region;
+  };
 
-	var identifier = jsonMap.identifier;
+  Regions.fromJsonArray = function (jsonArray) {
+    if (!_.isArray(jsonArray)) {
+      throw new TypeError('Expected an array.');
+    }
 
-	var region = null;
-	if (typeName === 'CircularRegion') {
+    const result = [];
+    _.each(jsonArray, function (region) {
+      result.push(Regions.fromJson(region));
+    });
+    return result;
+  };
 
-		var latitude = jsonMap.latitude;
-		var longitude = jsonMap.longitude;
-		var radius = jsonMap.radius;
-		region = new CircularRegion(identifier, latitude, longitude, radius);
+  /**
+   * Validates the input parameter [region] to be an instance of {Region}.
+   *
+   * @param {Region} region : The object that's type will be checked.
+   *
+   * @returns {undefined} If [region] is an instance of {Region}, throws otherwise.
+   */
+  Regions.checkRegionType = function (region) {
+    const regionHasInvalidType = !(region instanceof Region);
+    if (regionHasInvalidType) {
+      throw new TypeError(
+        'The region parameter has to be an instance of Region'
+      );
+    }
+  };
 
-	} else if (typeName === 'BeaconRegion') {
+  Regions.isRegion = function (object) {
+    return object instanceof Region;
+  };
 
-		var uuid = jsonMap.uuid;
-		var major = jsonMap.major;
-		var minor = jsonMap.minor;
-		region = new BeaconRegion(identifier, uuid, major, minor);
-	} else {
-		console.error('Unrecognized Region typeName: ' + typeName);
-	}
+  Regions.isCircularRegion = function (object) {
+    return object instanceof CircularRegion;
+  };
 
-	return region;
-};
+  Regions.isBeaconRegion = function (object) {
+    return object instanceof BeaconRegion;
+  };
 
-Regions.fromJsonArray = function(jsonArray) {
-	if (!_.isArray(jsonArray)) {
-		throw new TypeError('Expected an array.');
-	}
-		
-	var result = [];
-	_.each(jsonArray, function(region) {
-		result.push(Regions.fromJson(region));
-	});
-	return result;
-};
-
-/**
- * Validates the input parameter [region] to be an instance of {Region}.
- * 
- * @param {Region} region : The object that's type will be checked.
- * 
- * @returns {undefined} If [region] is an instance of {Region}, throws otherwise.
- */
-Regions.checkRegionType = function(region) {
-	var regionHasInvalidType = !(region instanceof Region);
-	if (regionHasInvalidType) {
-		throw new TypeError('The region parameter has to be an instance of Region');
-	}
-};
-
-Regions.isRegion = function(object) {
-	return object instanceof Region;
-};
-
-Regions.isCircularRegion = function(object) {
-	return object instanceof CircularRegion;
-};
-
-Regions.isBeaconRegion = function(object) {
-	return object instanceof BeaconRegion;
-};
-
-
-module.exports = Regions;
-
-
+  module.exports = Regions;
 });

@@ -25,10 +25,12 @@ const CordovaError = require('cordova-common').CordovaError;
  * @return {Builder} A builder instance for specified build type.
  */
 module.exports.getBuilder = function (projectPath) {
-    try {
-        const Builder = require('./ProjectBuilder');
-        return new Builder(projectPath);
-    } catch (err) {
-        throw new CordovaError('Failed to instantiate ProjectBuilder builder: ' + err);
-    }
+  try {
+    const Builder = require('./ProjectBuilder');
+    return new Builder(projectPath);
+  } catch (err) {
+    throw new CordovaError(
+      'Failed to instantiate ProjectBuilder builder: ' + err
+    );
+  }
 };

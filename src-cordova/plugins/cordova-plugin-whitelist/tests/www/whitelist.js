@@ -17,18 +17,21 @@
  * specific language governing permissions and limitations
  * under the License.
  *
-*/
+ */
 
-var argscheck = require('cordova/argscheck'),
-    exec = require('cordova/exec');
+const argscheck = require('cordova/argscheck');
+const exec = require('cordova/exec');
 
 module.exports = {
-    match: function(url, patterns, callback) {
-        //argscheck.checkArgs('fF', 'Whitelist.match', arguments);
-        exec(callback, callback, "WhitelistAPI", "URLMatchesPatterns", [url, patterns]);
-    },
-    test: function(url, callback) {
-        //argscheck.checkArgs('fF', 'Whitelist.test', arguments);
-        exec(callback, callback, "WhitelistAPI", "URLIsAllowed", [url]);
-    }
-}
+  match(url, patterns, callback) {
+    // argscheck.checkArgs('fF', 'Whitelist.match', arguments);
+    exec(callback, callback, 'WhitelistAPI', 'URLMatchesPatterns', [
+      url,
+      patterns,
+    ]);
+  },
+  test(url, callback) {
+    // argscheck.checkArgs('fF', 'Whitelist.test', arguments);
+    exec(callback, callback, 'WhitelistAPI', 'URLIsAllowed', [url]);
+  },
+};
