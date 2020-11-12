@@ -2,10 +2,16 @@
   <v-row justify="center" align="center">
     <v-col cols="12">
       <div v-for="(stream, index) in remoteStreams" :key="index">
-        <video autoplay playsinline :srcObject.prop="stream"></video>
+        <video
+          class="video-style"
+          autoplay
+          playsinline
+          :srcObject.prop="stream"
+        ></video>
       </div>
       <video
         id="my-video"
+        class="video-style"
         muted="true"
         width="500"
         autoplay
@@ -174,3 +180,9 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.video-style {
+  transform: rotateY(180deg);
+}
+</style>
