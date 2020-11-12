@@ -1,5 +1,9 @@
-cordova.define("com.unarin.cordova.beacon.BeaconRegion", function(require, exports, module) {
-/*
+cordova.define('com.unarin.cordova.beacon.BeaconRegion', function (
+  require,
+  exports,
+  module
+) {
+  /*
  Licensed to the Apache Software Foundation (ASF) under one
  or more contributor license agreements.  See the NOTICE file
  distributed with this work for additional information
@@ -18,25 +22,31 @@ cordova.define("com.unarin.cordova.beacon.BeaconRegion", function(require, expor
  under the License.
  */
 
-var _ = require('com.unarin.cordova.beacon.underscorejs');
-var Region = require('com.unarin.cordova.beacon.Region');
+  const _ = require('com.unarin.cordova.beacon.underscorejs');
+  const Region = require('com.unarin.cordova.beacon.Region');
 
-/**
- * Constructor for {CLBeaconRegion}.
- *
- * @param {String} identifier @see {CLRegion}
- *
- * @param {String} uuid The proximity ID of the beacon being targeted.
- * This value must not be blank nor invalid as a UUID.
- *
- * @param {Number} major The major value that you use to identify one or more beacons.
- * @param {Number} minor The minor value that you use to identify a specific beacon.
- *
- * @param {BOOL} notifyEntryStateOnDisplay
- *
- * @returns {BeaconRegion} An instance of {BeaconRegion}.
- */
-function BeaconRegion (identifier, uuid, major, minor, notifyEntryStateOnDisplay){
+  /**
+   * Constructor for {CLBeaconRegion}.
+   *
+   * @param {String} identifier @see {CLRegion}
+   *
+   * @param {String} uuid The proximity ID of the beacon being targeted.
+   * This value must not be blank nor invalid as a UUID.
+   *
+   * @param {Number} major The major value that you use to identify one or more beacons.
+   * @param {Number} minor The minor value that you use to identify a specific beacon.
+   *
+   * @param {BOOL} notifyEntryStateOnDisplay
+   *
+   * @returns {BeaconRegion} An instance of {BeaconRegion}.
+   */
+  function BeaconRegion(
+    identifier,
+    uuid,
+    major,
+    minor,
+    notifyEntryStateOnDisplay
+  ) {
     // Call the parent constructor, making sure (using Function#call)
     // that "this" is set correctly during the call
     Region.call(this, identifier);
@@ -47,78 +57,76 @@ function BeaconRegion (identifier, uuid, major, minor, notifyEntryStateOnDisplay
 
     // Coerce the wildcard UUID into a value of `undefined` which is the actual wildcard value for the Android Java code
     if (uuid === BeaconRegion.WILDCARD_UUID) {
-        this.uuid = undefined;
+      this.uuid = undefined;
     } else {
-        this.uuid = uuid;
+      this.uuid = uuid;
     }
-    
+
     this.major = major;
     this.minor = minor;
     this.notifyEntryStateOnDisplay = notifyEntryStateOnDisplay;
 
     this.typeName = 'BeaconRegion';
-};
+  }
 
-// Create a BeaconRegion.prototype object that inherits from Region.prototype.
-// Note: A common error here is to use "new Region()" to create the
-// BeaconRegion.prototype. That's incorrect for several reasons, not least
-// that we don't have anything to give Region for the "identifier"
-// argument. The correct place to call Region is above, where we call
-// it from BeaconRegion.
-BeaconRegion.prototype = Object.create(Region.prototype);
+  // Create a BeaconRegion.prototype object that inherits from Region.prototype.
+  // Note: A common error here is to use "new Region()" to create the
+  // BeaconRegion.prototype. That's incorrect for several reasons, not least
+  // that we don't have anything to give Region for the "identifier"
+  // argument. The correct place to call Region is above, where we call
+  // it from BeaconRegion.
+  BeaconRegion.prototype = Object.create(Region.prototype);
 
-// Set the "constructor" property to refer to BeaconRegion
-BeaconRegion.prototype.constructor = BeaconRegion;
+  // Set the "constructor" property to refer to BeaconRegion
+  BeaconRegion.prototype.constructor = BeaconRegion;
 
-/**
- * @public
- * @static
- *
- * Use this property as the value of the `UUID` parameter to express the intent of specifying a wild-card UUID.
- */
-BeaconRegion.WILDCARD_UUID = {};
+  /**
+   * @public
+   * @static
+   *
+   * Use this property as the value of the `UUID` parameter to express the intent of specifying a wild-card UUID.
+   */
+  BeaconRegion.WILDCARD_UUID = {};
 
-BeaconRegion.isValidUuid = function (uuid) {
-
+  BeaconRegion.isValidUuid = function (uuid) {
     // https://github.com/petermetz/cordova-plugin-ibeacon/issues/328
     // If we are on Android, then allow the UUID to be specified as a wild-card (omitted)
-    var isAndroid = device && device.platform === "Android";
+    const isAndroid = device && device.platform === 'Android';
     if (uuid === BeaconRegion.WILDCARD_UUID && isAndroid) {
-        return true;
+      return true;
     }
 
-    var uuidValidatorRegex = this.getUuidValidatorRegex();
+    const uuidValidatorRegex = this.getUuidValidatorRegex();
     return uuid.match(uuidValidatorRegex) != null;
-};
+  };
 
-BeaconRegion.getUuidValidatorRegex = function () {
+  BeaconRegion.getUuidValidatorRegex = function () {
     return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-};
+  };
 
-BeaconRegion.checkUuid = function (uuid) {
+  BeaconRegion.checkUuid = function (uuid) {
     if (!BeaconRegion.isValidUuid(uuid)) {
-        throw new TypeError(uuid + ' is not a valid UUID');
+      throw new TypeError(uuid + ' is not a valid UUID');
     }
-};
+  };
 
-BeaconRegion.checkMajorOrMinor = function (majorOrMinor) {
+  BeaconRegion.checkMajorOrMinor = function (majorOrMinor) {
     if (!_.isUndefined(majorOrMinor)) {
-        if (!_.isFinite(majorOrMinor)) {
-            throw new TypeError(majorOrMinor + ' is not a finite value');
-        }
+      if (!_.isFinite(majorOrMinor)) {
+        throw new TypeError(majorOrMinor + ' is not a finite value');
+      }
 
-        if (majorOrMinor > BeaconRegion.U_INT_16_MAX_VALUE ||
-            majorOrMinor < BeaconRegion.U_INT_16_MIN_VALUE) {
-            throw new TypeError(majorOrMinor + ' is out of valid range of values.');
-        }
+      if (
+        majorOrMinor > BeaconRegion.U_INT_16_MAX_VALUE ||
+        majorOrMinor < BeaconRegion.U_INT_16_MIN_VALUE
+      ) {
+        throw new TypeError(majorOrMinor + ' is out of valid range of values.');
+      }
     }
-};
+  };
 
-BeaconRegion.U_INT_16_MAX_VALUE = (1 << 16) - 1;
-BeaconRegion.U_INT_16_MIN_VALUE = 0;
+  BeaconRegion.U_INT_16_MAX_VALUE = (1 << 16) - 1;
+  BeaconRegion.U_INT_16_MIN_VALUE = 0;
 
-
-module.exports = BeaconRegion;
-
-
+  module.exports = BeaconRegion;
 });

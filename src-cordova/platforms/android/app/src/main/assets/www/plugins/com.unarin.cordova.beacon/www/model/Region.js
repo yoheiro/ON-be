@@ -1,5 +1,9 @@
-cordova.define("com.unarin.cordova.beacon.Region", function(require, exports, module) {
-/*
+cordova.define('com.unarin.cordova.beacon.Region', function (
+  require,
+  exports,
+  module
+) {
+  /*
  Licensed to the Apache Software Foundation (ASF) under one
  or more contributor license agreements.  See the NOTICE file
  distributed with this work for additional information
@@ -18,32 +22,29 @@ cordova.define("com.unarin.cordova.beacon.Region", function(require, exports, mo
  under the License.
  */
 
-var _ = require('com.unarin.cordova.beacon.underscorejs');
+  const _ = require('com.unarin.cordova.beacon.underscorejs');
 
-/**
- * Base class for different types of regions that the [LocationManager] can monitor.
- * @constructor
- *
- * @param {String} identifier A unique identifier to associate with the region object.
- *    You use this identifier to differentiate regions within your application.
- *    This value must not be nil.
- */
-function Region (identifier) {
-	Region.checkIdentifier(identifier);
+  /**
+   * Base class for different types of regions that the [LocationManager] can monitor.
+   * @constructor
+   *
+   * @param {String} identifier A unique identifier to associate with the region object.
+   *    You use this identifier to differentiate regions within your application.
+   *    This value must not be nil.
+   */
+  function Region(identifier) {
+    Region.checkIdentifier(identifier);
     this.identifier = identifier;
-};
+  }
 
-Region.checkIdentifier = function (identifier) {
-	if (!_.isString(identifier)) {
-		throw new TypeError(identifier + ' is not a String.');
-	}
-	if (_.isEmpty(identifier)) {
-		throw new Error("'identifier' cannot be an empty string.");
-	}
-};
+  Region.checkIdentifier = function (identifier) {
+    if (!_.isString(identifier)) {
+      throw new TypeError(identifier + ' is not a String.');
+    }
+    if (_.isEmpty(identifier)) {
+      throw new Error("'identifier' cannot be an empty string.");
+    }
+  };
 
-module.exports = Region;
-
-
-
+  module.exports = Region;
 });

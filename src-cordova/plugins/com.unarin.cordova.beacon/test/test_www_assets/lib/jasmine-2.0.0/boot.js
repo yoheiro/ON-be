@@ -8,8 +8,7 @@
  [jasmine-gem]: http://github.com/pivotal/jasmine-gem
  */
 
-(function() {
-
+(function () {
   /**
    * ## Require &amp; Instantiate
    *
@@ -25,59 +24,59 @@
   /**
    * Create the Jasmine environment. This is used to run all specs in a project.
    */
-  var env = jasmine.getEnv();
+  const env = jasmine.getEnv();
 
   /**
    * ## The Global Interface
    *
    * Build up the functions that will be exposed as the Jasmine public interface. A project can customize, rename or alias any of these functions as desired, provided the implementation remains unchanged.
    */
-  var jasmineInterface = {
-    describe: function(description, specDefinitions) {
+  const jasmineInterface = {
+    describe(description, specDefinitions) {
       return env.describe(description, specDefinitions);
     },
 
-    xdescribe: function(description, specDefinitions) {
+    xdescribe(description, specDefinitions) {
       return env.xdescribe(description, specDefinitions);
     },
 
-    it: function(desc, func) {
+    it(desc, func) {
       return env.it(desc, func);
     },
 
-    xit: function(desc, func) {
+    xit(desc, func) {
       return env.xit(desc, func);
     },
 
-    beforeEach: function(beforeEachFunction) {
+    beforeEach(beforeEachFunction) {
       return env.beforeEach(beforeEachFunction);
     },
 
-    afterEach: function(afterEachFunction) {
+    afterEach(afterEachFunction) {
       return env.afterEach(afterEachFunction);
     },
 
-    expect: function(actual) {
+    expect(actual) {
       return env.expect(actual);
     },
 
-    pending: function() {
+    pending() {
       return env.pending();
     },
 
-    spyOn: function(obj, methodName) {
+    spyOn(obj, methodName) {
       return env.spyOn(obj, methodName);
     },
 
     jsApiReporter: new jasmine.JsApiReporter({
-      timer: new jasmine.Timer()
-    })
+      timer: new jasmine.Timer(),
+    }),
   };
 
   /**
    * Add all of the Jasmine global/public interface to the proper global, so a project can use the public interface directly. For example, calling `describe` in specs instead of `jasmine.getEnv().describe`.
    */
-  if (typeof window == "undefined" && typeof exports == "object") {
+  if (typeof window === 'undefined' && typeof exports === 'object') {
     extend(exports, jasmineInterface);
   } else {
     extend(window, jasmineInterface);
@@ -86,21 +85,21 @@
   /**
    * Expose the interface for adding custom equality testers.
    */
-  jasmine.addCustomEqualityTester = function(tester) {
+  jasmine.addCustomEqualityTester = function (tester) {
     env.addCustomEqualityTester(tester);
   };
 
   /**
    * Expose the interface for adding custom expectation matchers
    */
-  jasmine.addMatchers = function(matchers) {
+  jasmine.addMatchers = function (matchers) {
     return env.addMatchers(matchers);
   };
 
   /**
    * Expose the mock interface for the JavaScript timeout functions
    */
-  jasmine.clock = function() {
+  jasmine.clock = function () {
     return env.clock;
   };
 
@@ -110,24 +109,36 @@
    * More browser specific code - wrap the query string in an object and to allow for getting/setting parameters from the runner user interface.
    */
 
-  var queryString = new jasmine.QueryString({
-    getWindowLocation: function() { return window.location; }
+  const queryString = new jasmine.QueryString({
+    getWindowLocation() {
+      return window.location;
+    },
   });
 
-  var catchingExceptions = queryString.getParam("catch");
-  env.catchExceptions(typeof catchingExceptions === "undefined" ? true : catchingExceptions);
+  const catchingExceptions = queryString.getParam('catch');
+  env.catchExceptions(
+    typeof catchingExceptions === 'undefined' ? true : catchingExceptions
+  );
 
   /**
    * ## Reporters
    * The `HtmlReporter` builds all of the HTML UI for the runner page. This reporter paints the dots, stars, and x's for specs, as well as all spec names and all failures (if any).
    */
-  var htmlReporter = new jasmine.HtmlReporter({
-    env: env,
-    onRaiseExceptionsClick: function() { queryString.setParam("catch", !env.catchingExceptions()); },
-    getContainer: function() { return document.body; },
-    createElement: function() { return document.createElement.apply(document, arguments); },
-    createTextNode: function() { return document.createTextNode.apply(document, arguments); },
-    timer: new jasmine.Timer()
+  const htmlReporter = new jasmine.HtmlReporter({
+    env,
+    onRaiseExceptionsClick() {
+      queryString.setParam('catch', !env.catchingExceptions());
+    },
+    getContainer() {
+      return document.body;
+    },
+    createElement() {
+      return document.createElement.apply(document, arguments);
+    },
+    createTextNode() {
+      return document.createTextNode.apply(document, arguments);
+    },
+    timer: new jasmine.Timer(),
   });
 
   /**
@@ -139,11 +150,13 @@
   /**
    * Filter which specs will be run by matching the start of the full name against the `spec` query param.
    */
-  var specFilter = new jasmine.HtmlSpecFilter({
-    filterString: function() { return queryString.getParam("spec"); }
+  const specFilter = new jasmine.HtmlSpecFilter({
+    filterString() {
+      return queryString.getParam('spec');
+    },
   });
 
-  env.specFilter = function(spec) {
+  env.specFilter = function (spec) {
     return specFilter.matches(spec.getFullName());
   };
 
@@ -160,9 +173,9 @@
    *
    * Replace the browser window's `onload`, ensure it's called, and then run all of the loaded specs. This includes initializing the `HtmlReporter` instance and then executing the loaded Jasmine environment. All of this will happen after all of the specs are loaded.
    */
-  var currentWindowOnload = window.onload;
+  const currentWindowOnload = window.onload;
 
-  window.onload = function() {
+  window.onload = function () {
     if (currentWindowOnload) {
       currentWindowOnload();
     }
@@ -174,8 +187,7 @@
    * Helper function for readability above.
    */
   function extend(destination, source) {
-    for (var property in source) destination[property] = source[property];
+    for (const property in source) destination[property] = source[property];
     return destination;
   }
-
-}());
+})();
