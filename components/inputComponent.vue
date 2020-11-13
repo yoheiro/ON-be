@@ -37,7 +37,7 @@ export default {
   margin: 10px;
 }
 .input-text {
-  border: 1px solid #ff8a65;
+  border: 1px solid #0277bd;
   border-radius: 25px;
   padding: 9px 20px 9px 20px;
   width: 300px;

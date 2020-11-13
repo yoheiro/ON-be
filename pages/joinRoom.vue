@@ -160,9 +160,9 @@ export default {
 
 <style>
 .content-divider {
-  border-color: #0277bd;
+  border-color: #29b6f6;
 }
 .user-data {
-  color: #0277bd;
+  color: #29b6f6;
 }
 </style>
