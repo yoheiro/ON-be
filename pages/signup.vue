@@ -39,7 +39,7 @@
       <MyModal class="terms" />
     </template>
     <div class="checkbox">
-      <v-checkbox v-model="checkbox" color="#61d4b3"></v-checkbox>
+      <v-checkbox v-model="checkbox" color="#29b6f6"></v-checkbox>
       <div class="agreement-text" @click="pushAgreement()">
         <span class="important">{{ agreement }}</span>
         に同意する
@@ -263,7 +263,7 @@ export default {
 .important {
   text-decoration: underline;
   cursor: pointer;
-  color: #ff8a65;
+  color: #29b6f6;
 }
 .validation-email {
   text-align: center;

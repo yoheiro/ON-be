@@ -276,7 +276,7 @@ export default {
 
 <style>
 .user-data {
-  color: #0277bd;
+  color: #29b6f6;
 }
 .div-edit-button {
   text-align: center;

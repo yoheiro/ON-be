@@ -33,9 +33,6 @@ export default {
 
 <style scoped>
 .login-button {
-  background: -webkit-linear-gradient(to right, #e64a19 0%, #ff8a65 50%)
-    no-repeat !important;
-  background: linear-gradient(to right, #e64a19 0%, #ff8a65 50%) no-repeat !important;
-  opacity: 0.5;
+  background: linear-gradient(to right, #0277bd 0%, #29b6f6 50%);
 }
 </style>

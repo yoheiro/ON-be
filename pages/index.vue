@@ -67,7 +67,7 @@ export default {
                 this.$router.push({ name: 'login' });
               } else {
                 await this.setUserEmail(user);
-                this.$router.push({ name: 'video' });
+                this.$router.push({ name: 'top' });
               }
             });
           })
