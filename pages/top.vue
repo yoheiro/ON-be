@@ -32,7 +32,7 @@ export default {
     async function assignment() {
       await that.$store.commit('getMajor', that.obj);
     }
-    assignment().then(alert('ここで遷移する'));
+    assignment().then();
   },
 };
 </script>
