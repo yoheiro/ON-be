@@ -14,9 +14,11 @@
   "dependencies": {
     "@nuxtjs/pwa": "^3.0.2",
     "core-js": "^3.6.5",
+    "dataurl-to-blob": "0.0.1",
     "firebase": "^8.0.1",
     "nuxt": "^2.14.6",
-    "skyway-js": "^4.0.0"
+    "skyway-js": "^4.0.0",
+    "vue-cropperjs": "^4.1.0"
   },
   "devDependencies": {
     "@nuxtjs/eslint-config": "^3.1.0",

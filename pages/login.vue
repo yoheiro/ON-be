@@ -139,7 +139,7 @@ export default {
               this.buttonText = 'Ok';
             } else {
               await this.setUserEmail(user);
-              that.$router.push({ name: 'video' });
+              that.$router.push({ name: 'top' });
             }
           });
         })
