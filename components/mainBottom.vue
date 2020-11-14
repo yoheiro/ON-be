@@ -1,11 +1,11 @@
 <template>
   <v-bottom-navigation :app="true" fixed grow>
-    <v-btn class="pl-0" @click="toRoom">
+    <v-btn nuxt :ripple="false" class="pl-0" @click="toRoom">
       <span>ルーム</span>
       <v-icon>mdi-door-open</v-icon>
     </v-btn>
     <v-divider vertical></v-divider>
-    <v-btn class="pr-0" @click="toMypage">
+    <v-btn nuxt :ripple="false" class="pr-0" @click="toMypage">
       <span>マイページ</span>
       <v-icon>mdi-account</v-icon>
     </v-btn>

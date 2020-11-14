@@ -10,7 +10,7 @@
     <feature name="LocationManager">
         <param name="android-package" value="com.unarin.cordova.beacon.LocationManager" />
     </feature>
-    <name>HelloCordova</name>
+    <name>On be</name>
     <description>
         A sample Apache Cordova application that responds to the deviceready event.
     </description>

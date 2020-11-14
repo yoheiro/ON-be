@@ -17,6 +17,7 @@ export default {
       { hid: 'description', name: 'description', content: '' },
     ],
     link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
+    script: [{ src: 'cordova.js' }],
   },
 
   // Global CSS (https://go.nuxtjs.dev/config-css)
@@ -62,8 +63,13 @@ export default {
   },
 
   // Build Configuration (https://go.nuxtjs.dev/config-build)
-  build: {},
+  build: {
+    publicPath: '/nuxt/',
+  },
   generate: {
-    dir: 'public'
-  }
+    dir: 'src-cordova/www',
+  },
+  router: {
+    mode: 'hash',
+  },
 };
